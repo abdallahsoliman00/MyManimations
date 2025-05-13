@@ -1,6 +1,6 @@
 # Some Animations
 
-https://github.com/user-attachments/assets/63f4bf92-47b1-4196-8b8f-f1a3058db327
+https://github.com/user-attachments/assets/bd4d474f-3b84-469d-b075-c9f8cdb96be9
 
 (Inspired by a [3B1B](https://www.youtube.com/@3blue1brown) animation)
 
