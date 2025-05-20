@@ -5,54 +5,15 @@ CREAM = "#FFFFC0"
 R = 3
 
 
-class DoubleArrow(VMobject):
-    def __init__(self,
-                 start=LEFT,
-                 end=RIGHT, 
-                 stroke_width=5, 
-                 buff=0.1, 
-                 tip_length=0.2,
-                 tip_thickness=0.2,
-                 **kwargs
-        ):
-        super().__init__(**kwargs)
-
-        direction = end - start
-        unit_dir = direction / np.linalg.norm(direction)
-
-        # Adjusted start and end to account for arrowheads
-        new_start = start + unit_dir * (tip_length + buff)
-        new_end = end - unit_dir * (tip_length + buff)
-
-        # Central line
-        line = Line(new_start, new_end, stroke_width=stroke_width, **kwargs)
-
-        # Arrowhead 1
-        tip1 = Triangle(fill_opacity=1, **kwargs)
-        tip1.stretch(tip_length / tip1.get_height(), dim=1)
-        tip1.stretch(tip_thickness / tip1.get_width(), dim=0)
-        tip1.rotate(line.get_angle() + PI/2)
-        tip1.move_to(new_start - unit_dir * tip_length / 2)
-
-        # Arrowhead 2
-        tip2 = Triangle(fill_opacity=1, **kwargs)
-        tip2.stretch(tip_length / tip2.get_height(), dim=1)
-        tip2.stretch(tip_thickness / tip2.get_width(), dim=0)
-        tip2.rotate(line.get_angle() - PI/2)
-        tip2.move_to(new_end + unit_dir * tip_length / 2)
-
-        self.add(line, tip1, tip2)
-
-
 class Area(InteractiveScene):
     def construct(self):
-
+        # Function definitions
         t2c={'r' : ORANGE,
              'A' : PURPLE,
              '\\theta': TEAL,
              'A_c' : BLUE_E,
              'N' : RED,
-             '\pi' : WHITE
+             r'\pi' : WHITE
              }
 
         def get_xyz(r, phi, theta=PI/2):
@@ -147,6 +108,7 @@ class Area(InteractiveScene):
 
         self.play(*[ShowCreation(circ_grp[i]) for i in (1,2)],
                   *[ShowCreation(sector_grp[i]) for i in (1,2)])
+        self.wait(2)
 
         # Show triangle
         triangle_grp = get_triangle_grp(N)
@@ -155,7 +117,7 @@ class Area(InteractiveScene):
         self.play(intermediate_grp.animate.move_to(triangle_grp, aligned_edge=TOP))
         self.play(FadeOut(intermediate_grp), FadeIn(triangle_grp), run_time=0.2)
 
-        base_pos = VGroup(circ_grp, sector_grp, triangle_grp).save_state()
+        self.wait()
 
         self.play(triangle_grp.animate.shift(UP*2))
 
@@ -172,6 +134,7 @@ class Area(InteractiveScene):
 
         A_label = Tex('A', t2c=t2c).scale(0.8).move_to(triangle_grp).shift(DOWN*0.5)
         Ac_label = Tex('A_c', t2c=t2c).move_to(circ_grp).shift(DOWN*0.5)
+        A_label_grp = VGroup(A_label, Ac_label)
         
         N_text = Tex(r'N = \text{number of sectors in circle}', t2c={'N' : RED}).scale(0.8).to_corner(UL)
 
@@ -198,6 +161,7 @@ class Area(InteractiveScene):
                   circ_grp[0][0].animate.set_fill(t2c['A_c'], opacity=0.2),
                   run_time=2
         )
+        self.wait()
         self.play(
             TransformFromCopy(Ac_1[:3], Ac_2[:3]),
             TransformFromCopy(A_2[2:5], Ac_2[3:6]),
@@ -205,7 +169,7 @@ class Area(InteractiveScene):
             TransformFromCopy(A_2[5:], Ac_2[7:]),
             run_time=2
             )
-        
+        self.wait()
         self.play(
             FadeOut(sector_grp),
             FadeOut(A_2),
@@ -213,15 +177,18 @@ class Area(InteractiveScene):
             Ac_2.animate.move_to(A_2).scale(1.1)
             )
         
+        # Show 2 pi/N calculations
         theta_eqn = Tex(r"\theta = \frac{2\pi}{N}", t2c=t2c).move_to(sector_grp).shift(LEFT)
         N_eqn = Tex(r'N = \frac{2\pi}{\theta}', t2c=t2c).next_to(theta_eqn, direction=DOWN)
 
         self.play(ShowCreation(theta_eqn))
+        self.wait()
         self.play(
             TransformFromCopy(theta_eqn[-1], N_eqn[0]),
             TransformFromCopy(theta_eqn[1:-1], N_eqn[1:-1]),
             TransformFromCopy(theta_eqn[0], N_eqn[-1]),
         )
+        self.wait()
 
         intermediate_eqn = Tex(r"A_c \approx \frac{1}{2} \frac{2\pi}{\theta} r^2 \sin{\theta}", t2c=t2c).scale(1.1).move_to(Ac_2)
 
@@ -230,7 +197,7 @@ class Area(InteractiveScene):
             TransformFromCopy(N_eqn[2:6], intermediate_eqn[6:10]),
             ReplacementTransform(Ac_2[7:], intermediate_eqn[10:]),
             FadeOut(Ac_2[6]),
-            run_time=3
+            run_time=2
         )
         self.wait()
 
@@ -244,9 +211,11 @@ class Area(InteractiveScene):
             ReplacementTransform(intermediate_eqn[10:], final_eqn[4:10]),
             ReplacementTransform(intermediate_eqn[8:10], final_eqn[10:]),
             FadeOut(one),
-            run_time=2
+            run_time=1
         )
+        self.wait(2)
 
+        # Define updaters
         def r_updater(r_grp):
             triangle_top = triangle_grp[0].get_all_points()[0]
             triangle_bottom = triangle_grp[0].get_all_points()[2]
@@ -273,30 +242,40 @@ class Area(InteractiveScene):
             sector_grp.clear_updaters()
             triangle_grp.clear_updaters()
 
+        # Show slices getting smaller
         add_updaters()
-        self.play(N_tracker.animate.set_value(30), run_time=1)        
+        self.play(N_tracker.animate.set_value(40), run_time=2.5)    
         remove_updaters()
+        self.wait()    
 
-        # Add here full equation with limit
+        # Equation with limit
         limit_eqn = Tex(r"\lim_{N \to \infty} A_c = \pi r^2", t2c=t2c).next_to(final_eqn, DOWN).scale(1.1)
         self.play(ShowCreation(limit_eqn[0:6]),
                   TransformFromCopy(final_eqn[0:6], limit_eqn[6:]))
         
-        self.remove_all_except(circ_grp, limit_eqn)
-        self.wait(10)
+        new_circ = Circle(
+            radius=R, stroke_color=CREAM
+            ).scale(0.6).move_to(circ_grp).set_fill(t2c['A_c'], 0.2)
+        
+        self.play(
+            FadeOut(final_eqn),
+            FadeOut(triangle_grp),
+            FadeOut(r_grp),
+            FadeOut(theta_eqn),
+            FadeOut(N_eqn),
+            FadeOut(N_text),
+            FadeOut(A_label_grp),
+            FadeTransform(circ_grp, new_circ)
+            )
+        self.wait(1)
 
-        add_updaters()
-        self.play(N_tracker.animate.set_value(6), run_time=1)
-        remove_updaters()
+        # Show final result
+        area_eqn = Tex(
+            r"A = \pi r^2", t2c={'A' : t2c['A_c'], "r": ORANGE}
+            ).scale(1.65).move_to(ORIGIN + 3*RIGHT)
 
-        # for i in range(6,21):
-        #     N = i
-        #     self.wait(0.001)
-
-        # for i in range(20,5,-1):
-        #     N = i
-        #     self.wait(0.001)
-
-        # remove_updaters()
-
-        # self.play(Indicate(VGroup(circ_grp, sector_grp, triangle_grp)))
+        self.play(
+            TransformMatchingStrings(limit_eqn, area_eqn),
+            new_circ.animate.scale(1/0.6).move_to(ORIGIN + 3*LEFT).set_stroke(t2c['A_c'])
+        )
+        self.wait(3)

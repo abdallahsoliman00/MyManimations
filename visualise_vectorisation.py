@@ -61,8 +61,8 @@ class NearestVectorClassification3D(InteractiveScene):
 
         # Class vectors
         class_vectors = {
-            "A": {"vec": np.array([1.5, 0.5, 1.5]), "color": RED},
-            "B": {"vec": np.array([-1, 1.5, -1]), "color": BLUE},
+            "A": {"vec": np.array([1.5, -0.5, 1.5]), "color": PURPLE},
+            "B": {"vec": np.array([-0.5, 1.5, -1]), "color": BLUE},
             "C": {"vec": np.array([0, -2, 1.5]), "color": GREEN},
         }
 
@@ -82,6 +82,9 @@ class NearestVectorClassification3D(InteractiveScene):
             label.rotate(phi, axis=RIGHT)
             label.rotate(theta, axis=OUT) 
             
+            # def update_label(m: Mobject):
+            #     m.become( Text(name, font_size=24, fill_color=GREY).move_to(1.1*vec).rotate(phi, axis=RIGHT).rotate(theta, axis=OUT) )
+
             # label.add_updater(update_label)
             
             arrows.add(arrow)
@@ -92,21 +95,19 @@ class NearestVectorClassification3D(InteractiveScene):
         self.wait()
 
         # Test vector
-        test_vec = np.array([0, 1, 2])
-        test_arrow = Arrow3D(test_vec, color=YELLOW)
+        test_vec = np.array([0.25, 1, -1.8])
+        test_arrow = Arrow3D(test_vec, color=RED)
         test_label = Text("Test", font_size=24, fill_color=GREY)
         test_label.move_to(1.1*test_vec)
-        test_label.save_state()
         test_label.rotate(phi, axis=RIGHT)
         test_label.rotate(theta, axis=OUT) 
         
-        # def label_updater(m):
-        #     theta, phi = self.frame.get_euler_angles()[:2]
-        #     m.rotate(phi, axis=RIGHT)
-        #     m.rotate(theta, axis=OUT) 
+        def label_updater(m : Mobject):
+            theta, phi = self.frame.get_euler_angles()[:2]
+            m.become(Text("Test", font_size=24, fill_color=GREY)).rotate(phi, axis=RIGHT).rotate(theta, axis=OUT).move_to(1.1*test_vec)
 
         # Add updater to test label
-        # test_label.add_updater(label_updater)
+        test_label.add_updater(label_updater)
         
         self.play(FadeIn(test_arrow), FadeIn(test_label))
         self.wait()
@@ -127,7 +128,7 @@ class NearestVectorClassification3D(InteractiveScene):
         nearest_idx = np.argmin(distances)
         nearest_color = list(class_vectors.values())[nearest_idx]["color"]
         nearest_name = list(class_vectors.keys())[nearest_idx]
-        self.play(self.frame.animate.reorient(31, 63, 0, (0.56, 0.38, 1.22), 4.77), run_time=2)
+        self.play(self.frame.animate.reorient(-73, 93, 0, (0.25, 0.75, -0.77), 4.09), run_time=2)
 
         highlight_line = lines[nearest_idx].copy().set_color(YELLOW).set_stroke(width=6)
         self.play(Transform(lines[nearest_idx], highlight_line))
