@@ -229,12 +229,12 @@ class Area(InteractiveScene):
         def add_updaters():
             # Add updaters
             circ_grp[0].add_updater(lambda c: c.become(get_new_circle(get_N(), color=c[0].get_fill_color()).scale(0.6).move_to(c)))
-            circ_grp[1].add_updater(lambda a: a.become(Arc(angle=2*PI/get_N(), radius=0.5*0.6, arc_center=circ_grp[0].get_center(), stroke_width=2)))
+            circ_grp[1].add_updater(lambda a: a.become(Arc(angle=2*PI/get_N(), radius=0.6*0.6, arc_center=circ_grp[0].get_center(), stroke_width=2)))
 
             r_grp.add_updater(r_updater)
 
             # sector_grp.add_updater(lambda s: s.become(get_sector_grp(N).move_to(s)))
-            triangle_grp.add_updater(lambda t: t.become(get_triangle_grp(get_N(), color=t.get_fill_color()).move_to(t)))
+            triangle_grp.add_updater(lambda t: t.become(get_triangle_grp(get_N(), color=t2c['A']).move_to(t)))
             # self.play(Indicate(sector_grp), run_time=0.001)
 
         def remove_updaters():

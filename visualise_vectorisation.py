@@ -52,7 +52,7 @@ class Arrow3D(Group):
 
 class NearestVectorClassification3D(InteractiveScene):
     def construct(self):
-        self.frame.reorient(-52, 63, 0, (0.02, 0.34, 0.96), 5.54)
+        self.frame.reorient(-130, 67, 0, (-0.24, -0.31, 0.97), 5.89)
         theta, phi = self.frame.get_euler_angles()[:2]
         # self.add(Text(str(l[0:2]*D)))
         # Axes
@@ -61,8 +61,8 @@ class NearestVectorClassification3D(InteractiveScene):
 
         # Class vectors
         class_vectors = {
-            "A": {"vec": np.array([1.5, -0.5, 1.5]), "color": PURPLE},
-            "B": {"vec": np.array([-0.5, 1.5, -1]), "color": BLUE},
+            "A": {"vec": 1.5*np.array([0.75, 0.75, 0.75]), "color": ORANGE},
+            "B": {"vec": np.array([-2, 0.5, -0.5]), "color": BLUE},
             "C": {"vec": np.array([0, -2, 1.5]), "color": GREEN},
         }
 
@@ -75,7 +75,7 @@ class NearestVectorClassification3D(InteractiveScene):
             arrow = Arrow3D(direction=vec, color=color, start=ORIGIN)
             
             # Create label as a TextMobject with billboarding effect
-            label = Text(name, font_size=24, fill_color=GREY)
+            label = Text(name, font_size=24)
             label.move_to(1.1*vec)
             
             # Setup updating function to make label face camera
@@ -95,16 +95,16 @@ class NearestVectorClassification3D(InteractiveScene):
         self.wait()
 
         # Test vector
-        test_vec = np.array([0.25, 1, -1.8])
+        test_vec = np.array([0.25, -1, 1.8])
         test_arrow = Arrow3D(test_vec, color=RED)
-        test_label = Text("Test", font_size=24, fill_color=GREY)
+        test_label = Text("Test", font_size=24)
         test_label.move_to(1.1*test_vec)
         test_label.rotate(phi, axis=RIGHT)
         test_label.rotate(theta, axis=OUT) 
         
         def label_updater(m : Mobject):
             theta, phi = self.frame.get_euler_angles()[:2]
-            m.become(Text("Test", font_size=24, fill_color=GREY)).rotate(phi, axis=RIGHT).rotate(theta, axis=OUT).move_to(1.1*test_vec)
+            m.become(Text("Test", font_size=24)).rotate(phi, axis=RIGHT).rotate(theta, axis=OUT).move_to(1.1*test_vec)
 
         # Add updater to test label
         test_label.add_updater(label_updater)
@@ -117,7 +117,7 @@ class NearestVectorClassification3D(InteractiveScene):
         distances = []
         for name, data in class_vectors.items():
             end = data["vec"]
-            line = DashedLine(test_vec, end, color=GREY)
+            line = DashedLine(test_vec, end, color=GREY_A)
             lines.append(line)
             distances.append(np.linalg.norm(test_vec - end))
 
@@ -128,13 +128,13 @@ class NearestVectorClassification3D(InteractiveScene):
         nearest_idx = np.argmin(distances)
         nearest_color = list(class_vectors.values())[nearest_idx]["color"]
         nearest_name = list(class_vectors.keys())[nearest_idx]
-        self.play(self.frame.animate.reorient(-73, 93, 0, (0.25, 0.75, -0.77), 4.09), run_time=2)
+        self.play(self.frame.animate.reorient(-75, 74, 0, (-0.05, -0.82, 1.02), 3.88), run_time=2)
 
         highlight_line = lines[nearest_idx].copy().set_color(YELLOW).set_stroke(width=6)
         self.play(Transform(lines[nearest_idx], highlight_line))
 
         # For 2D UI elements, add them to the fixed position in corner
-        result = Text(f"Classified as: {nearest_name}", font_size=28, color=nearest_color).to_corner(UL)
+        result = Text(f"Classified as: {nearest_name}", font_size=28).to_corner(UL)
         # Make the result label a fixed position overlay
         result.fix_in_frame()
         self.play(FadeIn(result))
