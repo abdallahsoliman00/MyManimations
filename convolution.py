@@ -7,6 +7,12 @@ def step(lower, upper, x):
 
 
 class VisualiseConvolution(InteractiveScene):
+    def f1(self, x):
+        return np.array([i + 1 if -1 <= i <= 0 else -i + 1 if 0 <= i <= 1 else 0 for i in x])
+
+    def f2(self, x):
+        return step(-0.5, 0.5, x)
+
     def construct(self):
 
         # def create_axes():
@@ -83,13 +89,13 @@ class VisualiseConvolution(InteractiveScene):
 
         x = np.linspace(-3,3,3001)
 
-        f1 = np.array([i + 1 if -1 <= i <= 0 else -i + 1 if 0 <= i <= 1 else 0 for i in x])
+        f1 = self.f1(x)
         c1 = VMobject()
         c1.set_points_as_corners(ax1.c2p(x,f1))
         c1.set_stroke(color=YELLOW_B, width=2)
         self.add(c1)
 
-        f2 = step(0, 0.5, x)
+        f2 = self.f2(x)
         c2 = VMobject()
         c2.set_points_as_corners(ax2.c2p(x,f2))
         c2.set_stroke(color=BLUE_C, width=2)
@@ -143,7 +149,7 @@ class VisualiseConvolution(InteractiveScene):
 
         def s_val_updater(a):
             global f2, f3
-            f2 = step(0,0.5,get_s()-x)
+            f2 = self.f2(get_s()-x)
             f3 = f1*f2
             a.set_value(get_s())
 
@@ -171,7 +177,7 @@ class VisualiseConvolution(InteractiveScene):
 
         def c2_updater(curve):
             global f2
-            f2 = step(0,0.5,get_s()-x)
+            f2 = self.f2(get_s()-x)
             curve.set_points_as_corners(ax2.c2p(x,f2))
         c2.add_updater(c2_updater)
 
