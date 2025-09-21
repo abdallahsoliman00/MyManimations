@@ -14,8 +14,9 @@ def calc_mse(x, y, init_mc):
     m,c = init_mc
     y_act = m*x +c
     err = y-y_act
-    mse = np.sum(err**2)
+    mse = np.mean(err**2)
     return mse
+
 
 # Finds the gradient in n-dimensions of a function at a point
 def grad(x , y, coords, epsilon=0.01):
